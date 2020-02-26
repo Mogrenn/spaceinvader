@@ -6,12 +6,12 @@ var interval;
 function init() {
   canvas = document.getElementById("canvas");
   document.addEventListener("keydown", keyDown);
-  document.addEventListener("keyup", keyUp)
+  document.addEventListener("keyup", keyUp);
   ctx = canvas.getContext("2d");
   game_loop = new GameLoop();
   window.requestAnimationFrame(draw);
   interval = setInterval(function(){
-    window.requestAnimationFrame(draw());
+    draw();
   }, 20);
 }
 
@@ -115,8 +115,20 @@ class Player extends Entity {
     return this.vx;
   }
 
+  get_x(){
+    return this.x;
+  }
+
   update(){
-    this.x += this.vx;
+
+    if(this.x <= 0 && this.vx > 0)
+      this.x += this.vx;
+    else if(this.x + this.w >= canvas.width && this.vx < 0)
+      this.x += this.vx;
+    else if(this.x > 0 && this.x + this.w < canvas.width)
+      this.x += this.vx;
+    else
+      this.vx = 0;
   }
 }
 
@@ -166,6 +178,10 @@ class GameLoop {
   get_player_speed(){
     return this.entities[0].get_vx();
   }
+
+  get_player_x(){
+    return this.entities[0].get_x();
+  }
 }
 
 function keyDown(e) {
@@ -180,7 +196,7 @@ function keyDown(e) {
 
       //rigth
     case 68:
-      game_loop.set_player_speed(2);
+        game_loop.set_player_speed(2);
       break;
 
       //left
