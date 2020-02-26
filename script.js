@@ -33,6 +33,7 @@ class Entity {
     this.h = h;
     this.color = color;
     this.vy = 1;
+    this.hitbox = new Hitbox(this.x, this.y, this.w, this.h);
   }
 
   update(){
