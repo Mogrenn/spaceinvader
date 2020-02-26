@@ -32,8 +32,41 @@ class Entity {
     this.w = w;
     this.h = h;
     this.color = color;
-    this.vy = 1;
+    this.vy = 0;
+    this.vx = 0;
     this.hitbox = new Hitbox(this.x, this.y, this.w, this.h);
+  }
+
+  set_vx(vx){
+    this.vx = vx;
+  }
+
+  set_x(x){
+    this.x = x;
+  }
+
+  set_y(y){
+    this.y = y;
+  }
+
+  get_vx(){
+    return this.vx;
+  }
+
+  get_x(){
+    return this.x;
+  }
+
+  get_y(){
+    return this.y;
+  }
+
+  get_width(){
+    return this.w;
+  }
+
+  get_heigth(){
+    return this.h;
   }
 
   update(){
@@ -53,6 +86,7 @@ class Bullet extends Entity {
   constructor(x, y) {
     super(x, y, 20, 20, "#00FF00");
     this.dmg = 1;
+    this.vy = 1;
   }
 
   update(){
@@ -66,10 +100,11 @@ class Enemies extends Entity {
   constructor(x, y, w, h, color) {
     super(x, y, w, h, color);
     this.hp = 3;
+    this.vx = 1;
   }
 
   update(){
-
+    this.x += this.vx;
   }
 }
 
@@ -109,18 +144,6 @@ class Player extends Entity {
     return this.shooting;
   }
 
-  set_vx(vx){
-    this.vx = vx;
-  }
-
-  get_vx(){
-    return this.vx;
-  }
-
-  get_x(){
-    return this.x;
-  }
-
   update(){
 
     if(this.x <= 0 && this.vx > 0)
@@ -157,6 +180,8 @@ class Hitbox{
 class GameLoop {
   constructor() {
     this.entities = [];
+    this.mode = 0; // mode = 0 makes enemies go right, mode = 1 makes enemies go left
+    this.alive = true;
     this.entities.push(new Player(canvas.width / 2 - 40, canvas.height - 100));
     for (var i = 0, y = 30; i < 4; i++, y += 60) {
       for (var j = 0, x = 30; j < 9; j++, x += 60) {
@@ -172,7 +197,45 @@ class GameLoop {
   }
 
   draw_all() {
-    this.entities.forEach(entity => entity.draw());
+    var change = false;
+    this.entities.forEach(entity => {
+      entity.draw();
+      if(entity instanceof Enemies)
+        //checks if enemies are going of screen, if they do change direction
+        if(entity.get_x() <= 0 && !change){
+          change = true;
+        }else if(entity.get_x() + entity.get_width() >= canvas.width && !change){
+          change = true;
+        }
+      else if(entity instanceof Bullet){
+        if(entity.get_y() < 0){
+          
+        }
+      }
+    });
+
+    //change direction on enemies
+    if(change){
+      //go left
+      if(this.mode === 0){
+        this.mode = 1;
+        this.entities.forEach(entity => {
+          if(entity instanceof Enemies){
+            entity.set_vx(-1);
+            entity.set_y(entity.get_y() + 30);
+          }
+        });
+      //go right
+      }else{
+        this.mode = 0;
+        this.entities.forEach(entity => {
+          if(entity instanceof Enemies){
+            entity.set_vx(1);
+            entity.set_y(entity.get_y() + 30);
+          }
+        });
+      }
+    }
   }
 
   set_player_speed(vx){
