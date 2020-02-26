@@ -69,6 +69,7 @@ class Entity {
     return this.h;
   }
 
+  //abstract function for entity movement
   update(){
     throw new Error('You have to implement the method update!');
   }
@@ -145,13 +146,16 @@ class Player extends Entity {
   }
 
   update(){
-
+    //checks if player are trying to go right after hitting left wall
     if(this.x <= 0 && this.vx > 0)
       this.x += this.vx;
+    //checks if player are trying to go left after hitting right wall
     else if(this.x + this.w >= canvas.width && this.vx < 0)
       this.x += this.vx;
+    //if player is not hitting any walls
     else if(this.x > 0 && this.x + this.w < canvas.width)
       this.x += this.vx;
+    //stops player from going past the wall
     else
       this.vx = 0;
 
@@ -271,7 +275,6 @@ function keyDown(e) {
       game_loop.set_player_speed(-2);
       break;
   }
-
 }
 
 function keyUp(e){
