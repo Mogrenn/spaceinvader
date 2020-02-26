@@ -57,6 +57,7 @@ class Bullet extends Entity {
 
   update(){
     this.y -= this.vy;
+    this.hitbox.y = this.y;
   }
 }
 
@@ -130,6 +131,8 @@ class Player extends Entity {
       this.x += this.vx;
     else
       this.vx = 0;
+
+    this.hitbox.x = this.x;
   }
 }
 
