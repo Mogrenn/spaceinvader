@@ -1,18 +1,27 @@
 var canvas;
 var ctx;
 var game_loop;
+var interval;
 
 function init() {
   canvas = document.getElementById("canvas");
   document.addEventListener("keydown", keyDown);
+  document.addEventListener("keyup", keyUp)
   ctx = canvas.getContext("2d");
   game_loop = new GameLoop();
   window.requestAnimationFrame(draw);
+  interval = setInterval(function(){
+    window.requestAnimationFrame(draw());
+  }, 20);
+}
+
+function clear_canvas(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function draw() {
+  clear_canvas();
   game_loop.draw_all();
-  window.requestAnimationFrame(draw);
 }
 
 //base class for almost everything
@@ -23,9 +32,15 @@ class Entity {
     this.w = w;
     this.h = h;
     this.color = color;
+    this.vy = 1;
+  }
+
+  update(){
+    throw new Error('You have to implement the method update!');
   }
 
   draw() {
+    this.update();
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.w, this.h);
@@ -38,6 +53,10 @@ class Bullet extends Entity {
     super(x, y, 20, 20, "#00FF00");
     this.dmg = 1;
   }
+
+  update(){
+    this.y -= this.vy;
+  }
 }
 
 //base class for different types of enemies
@@ -45,6 +64,10 @@ class Enemies extends Entity {
   constructor(x, y, w, h, color) {
     super(x, y, w, h, color);
     this.hp = 3;
+  }
+
+  update(){
+
   }
 }
 
@@ -62,6 +85,7 @@ class Player extends Entity {
     //Attack speed
     this.as = 500;
     this.shooting = false;
+    this.vx = 0;
   }
 
   shoot() {
@@ -81,6 +105,18 @@ class Player extends Entity {
 
   get_shooting(){
     return this.shooting;
+  }
+
+  set_vx(vx){
+    this.vx = vx;
+  }
+
+  get_vx(){
+    return this.vx;
+  }
+
+  update(){
+    this.x += this.vx;
   }
 }
 
@@ -122,6 +158,14 @@ class GameLoop {
   draw_all() {
     this.entities.forEach(entity => entity.draw());
   }
+
+  set_player_speed(vx){
+    this.entities[0].set_vx(vx);
+  }
+
+  get_player_speed(){
+    return this.entities[0].get_vx();
+  }
 }
 
 function keyDown(e) {
@@ -136,11 +180,37 @@ function keyDown(e) {
 
       //rigth
     case 68:
+      game_loop.set_player_speed(2);
       break;
 
       //left
     case 65:
+      game_loop.set_player_speed(-2);
       break;
   }
 
+}
+
+function keyUp(e){
+  switch (e.keyCode) {
+
+    //rigth
+    case 68:
+      if(game_loop.get_player_speed() < 0){
+
+      }else{
+        game_loop.set_player_speed(0);
+      }
+      break;
+
+    //left
+    case 65:
+
+      if(game_loop.get_player_speed() > 0){
+
+      }else{
+        game_loop.set_player_speed(0);
+      }
+      break;
+  }
 }
