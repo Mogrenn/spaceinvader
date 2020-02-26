@@ -209,7 +209,7 @@ class GameLoop {
         }
       else if(entity instanceof Bullet){
         if(entity.get_y() < 0){
-          
+          //issue: 1 desc: add Bullet logic so it dissapears
         }
       }
     });
