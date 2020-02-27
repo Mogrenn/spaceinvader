@@ -163,7 +163,18 @@ class Player extends Entity {
   }
 }
 
+class Cover extends Entity{
 
+  constructor(x,y){
+    super(x, y, 60, 20, "#FF69B4");
+    this.hp = 5;
+  }
+
+  update(){
+
+  }
+
+}
 
 class Hitbox{
   constructor(x, y, w, h){
@@ -188,7 +199,10 @@ class GameLoop {
     this.entities = [];
     this.mode = 0; // mode = 0 makes enemies go right, mode = 1 makes enemies go left
     this.alive = true;
-    this.entities.push(new Player(canvas.width / 2 - 40, canvas.height - 100));
+    this.entities.push(new Player(canvas.width / 2 - 40, canvas.height - 50));
+    for(var i = 0, x = 25; i < 5; i++, x += 120){
+      //this.entities.push(new Cover(x, canvas.height - 100));
+    }
     for (var i = 0, y = 30; i < 4; i++, y += 60) {
       for (var j = 0, x = 30; j < 9; j++, x += 60) {
         this.entities.push(new Hunter(x, y));
@@ -213,11 +227,21 @@ class GameLoop {
           this.entities.splice(index, 1);
         }else{
           //if bullet hits an enemy remove the enemy and the bullet
-          this.entities.forEach((enemies, j) =>{
-            if(enemies instanceof Enemies){
-              if(entity.hitbox.check_collision(enemies.hitbox)){
+          this.entities.forEach((temp, j) =>{
+            if(temp instanceof Enemies){
+              if(entity.hitbox.check_collision(temp.hitbox)){
                 this.entities.splice(index, 1);
                 this.entities.splice(j, 1);
+              }
+            //if bullets hits a cover make it lose 1 hp
+            }else if(temp instanceof Cover){
+              if(entity.hitbox.check_collision(temp.hitbox)){
+                this.entities.splice(index, 1);
+                temp.hp -= entity.dmg;
+                //if cover
+                if(temp.hp <= 0){
+                  this.entities.splice(j, 1);
+                }
               }
             }
           });
