@@ -101,7 +101,7 @@ class Enemies extends Entity {
   constructor(x, y, w, h, color) {
     super(x, y, w, h, color);
     this.hp = 3;
-    this.vx = 1;
+    this.vx = 0;
   }
 
   update(){
@@ -202,18 +202,29 @@ class GameLoop {
 
   draw_all() {
     var change = false;
-    this.entities.forEach(entity => {
+    this.entities.forEach((entity, index) => {
       entity.draw();
-      if(entity instanceof Enemies)
+      if(entity instanceof Bullet){
+        //if bullet goes of screen remove it from the array
+        if(entity.get_y() < 0){
+          this.entities.splice(index, 1);
+        }else{
+          //if bullet hits an enemy remove the enemy and the bullet
+          this.entities.forEach((enemies, j) =>{
+            if(enemies instanceof Enemies){
+              if(entity.hitbox.check_collision(enemies.hitbox)){
+                this.entities.splice(index, 1);
+                this.entities.splice(j, 1);
+              }
+            }
+          });
+        }
+      }else if(entity instanceof Enemies){
         //checks if enemies are going of screen, if they do change direction
         if(entity.get_x() <= 0 && !change){
           change = true;
         }else if(entity.get_x() + entity.get_width() >= canvas.width && !change){
           change = true;
-        }
-      else if(entity instanceof Bullet){
-        if(entity.get_y() < 0){
-          //issue: 1 desc: add Bullet logic so it dissapears
         }
       }
     });
