@@ -202,6 +202,7 @@ class GameLoop {
 
   draw_all() {
     var change = false;
+    var no_enemies = true;
     this.entities.forEach((entity, index) => {
       entity.draw();
       if(entity instanceof Bullet){
@@ -220,6 +221,10 @@ class GameLoop {
           });
         }
       }else if(entity instanceof Enemies){
+        //checks if all enemies are dead
+        if(!no_enemies)
+          no_enemies = true;
+
         //checks if enemies are going of screen, if they do change direction
         if(entity.get_x() <= 0 && !change){
           change = true;
