@@ -163,6 +163,8 @@ class Player extends Entity {
   }
 }
 
+
+
 class Hitbox{
   constructor(x, y, w, h){
     this.x = x;
@@ -222,8 +224,8 @@ class GameLoop {
         }
       }else if(entity instanceof Enemies){
         //checks if all enemies are dead
-        if(!no_enemies)
-          no_enemies = true;
+        if(no_enemies)
+          no_enemies = false;
 
         //checks if enemies are going of screen, if they do change direction
         if(entity.get_x() <= 0 && !change){
@@ -233,6 +235,10 @@ class GameLoop {
         }
       }
     });
+
+    //Restart if all enemies are dead (change later for levels)
+    if(no_enemies)
+      init();
 
     //change direction on enemies
     if(change){
