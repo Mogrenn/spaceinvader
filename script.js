@@ -106,6 +106,7 @@ class Enemies extends Entity {
 
   update(){
     this.x += this.vx;
+    this.hitbox.x = this.x;
   }
 }
 
@@ -201,7 +202,7 @@ class GameLoop {
     this.alive = true;
     this.entities.push(new Player(canvas.width / 2 - 40, canvas.height - 50));
     for(var i = 0, x = 25; i < 5; i++, x += 120){
-      //this.entities.push(new Cover(x, canvas.height - 100));
+      this.entities.push(new Cover(x, canvas.height - 100));
     }
     for (var i = 0, y = 30; i < 4; i++, y += 60) {
       for (var j = 0, x = 30; j < 9; j++, x += 60) {
@@ -273,6 +274,7 @@ class GameLoop {
           if(entity instanceof Enemies){
             entity.set_vx(-1);
             entity.set_y(entity.get_y() + 30);
+            entity.hitbox.y = entity.get_y();
           }
         });
       //go right
@@ -282,6 +284,7 @@ class GameLoop {
           if(entity instanceof Enemies){
             entity.set_vx(1);
             entity.set_y(entity.get_y() + 30);
+            entity.hitbox.y = entity.get_y();
           }
         });
       }
